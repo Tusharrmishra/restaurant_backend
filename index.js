@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -27,13 +28,19 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://taradeshpande.com", // Allow only your frontend domain
+    methods: ["GET", "POST", "PUT", "DELETE"], // Specify allowed methods
+    allowedHeaders: ["Content-Type", "Authorization"], // Specify allowed headers
+  })
+);
 app.use(express.json());
 app.use("/uploads", express.static(uploadsDir)); // Serve static image files
 
 // MongoDB Connection
 mongoose
-  .connect("mongodb://localhost:27017/restaurants_website")
+  .connect(process.env.MONGODB_URI)
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.error(err));
 
